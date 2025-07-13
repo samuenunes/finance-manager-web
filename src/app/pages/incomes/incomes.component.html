@@ -1,0 +1,205 @@
+
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Receitas</h1>
+    <button 
+      type="button"
+      class="btn-primary flex items-center"
+      (click)="openModal()">
+      <app-lucide-icon name="plus" [size]="20" class="mr-2"></app-lucide-icon>
+      Nova Receita
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <app-loading *ngIf="isLoading"></app-loading>
+
+  <!-- Incomes List -->
+  <div *ngIf="!isLoading" class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Descrição
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Categoria
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Valor
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Data
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Ações
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr *ngFor="let income of incomes" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ income.description }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200">
+                {{ income.category.name }}
+              </span>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span *ngIf="income.category.fixed">Fixa</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-semibold text-green-600 dark:text-green-400">
+                {{ formatCurrency(income.amount) }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-gray-300">
+                {{ formatDate(income.date) }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <button 
+                  type="button"
+                  class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 p-1 rounded hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
+                  (click)="openModal(income)"
+                  title="Editar receita">
+                  <app-lucide-icon name="edit" [size]="16"></app-lucide-icon>
+                </button>
+                <button 
+                  type="button"
+                  class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                  (click)="confirmDelete(income.id)"
+                  title="Excluir receita">
+                  <app-lucide-icon name="trash" [size]="16"></app-lucide-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="incomes.length === 0">
+            <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+              <app-lucide-icon name="inbox" [size]="48" class="mx-auto mb-4 text-gray-300 dark:text-gray-600"></app-lucide-icon>
+              <p class="text-lg font-medium mb-2">Nenhuma receita encontrada</p>
+              <p class="text-sm mb-4">Comece adicionando sua primeira receita</p>
+              <button 
+                type="button"
+                class="btn-primary"
+                (click)="openModal()">
+                <app-lucide-icon name="plus" [size]="16" class="mr-2"></app-lucide-icon>
+                Adicionar primeira receita
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <app-modal 
+    [isOpen]="showModal"
+    [title]="editingIncome ? 'Editar Receita' : 'Nova Receita'"
+    confirmText="Salvar"
+    cancelText="Cancelar"
+    (confirm)="onSubmit()"
+    (cancel)="closeModal()">
+    
+    <form [formGroup]="incomeForm" class="space-y-4">
+      <!-- Description -->
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Descrição
+        </label>
+        <input
+          id="description"
+          type="text"
+          formControlName="description"
+          class="input-field"
+          [class.border-red-500]="getFieldError('description')"
+          placeholder="Ex: Salário, Freelance, Investimentos..."
+        />
+        <p *ngIf="getFieldError('description')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getFieldError('description') }}
+        </p>
+      </div>
+
+      <!-- Amount -->
+      <div>
+        <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Valor
+        </label>
+        <input
+          id="amount"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="amount"
+          class="input-field"
+          [class.border-red-500]="getFieldError('amount')"
+          placeholder="0,00"
+        />
+        <p *ngIf="getFieldError('amount')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getFieldError('amount') }}
+        </p>
+      </div>
+
+      <!-- Category -->
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Categoria
+        </label>
+        <select
+          id="category"
+          formControlName="category"
+          class="input-field"
+          [class.border-red-500]="getFieldError('category')">
+          <option value="">Selecione uma categoria</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+            <span *ngIf="category.fixed">(Fixa)</span>
+          </option>
+        </select>
+        <p *ngIf="getFieldError('category')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getFieldError('category') }}
+        </p>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Data
+        </label>
+        <input
+          id="date"
+          type="date"
+          formControlName="date"
+          class="input-field"
+          [class.border-red-500]="getFieldError('date')"
+        />
+        <p *ngIf="getFieldError('date')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getFieldError('date') }}
+        </p>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-modal 
+    [isOpen]="showDeleteModal"
+    title="Confirmar Exclusão"
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    (confirm)="deleteIncome()"
+    (cancel)="cancelDelete()">
+    
+    <p class="text-gray-600 dark:text-gray-300">
+      Tem certeza que deseja excluir esta receita? Esta ação não pode ser desfeita.
+    </p>
+  </app-modal>
+</div>

@@ -1,0 +1,127 @@
+
+<div class="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800">
+  <!-- Header -->
+  <header class="relative z-10">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <div class="flex items-center">
+          <app-icon class="text-primary-600 mr-3" size="32">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </app-icon>
+          <span class="text-2xl font-bold text-gray-900 dark:text-white">Finance Manager</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a routerLink="/login" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium">
+            Entrar
+          </a>
+          <a routerLink="/register" class="btn-primary">
+            Cadastrar
+          </a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+        Controle suas
+        <span class="text-primary-600">finanças</span>
+        com inteligência
+      </h1>
+      <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+        Gerencie suas receitas e despesas, acompanhe seus gastos e tome decisões financeiras mais inteligentes com nossa plataforma completa.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a routerLink="/register" class="btn-primary text-lg px-8 py-3">
+          Começar Gratuitamente
+        </a>
+        <a routerLink="/login" class="btn-secondary text-lg px-8 py-3">
+          Já tenho conta
+        </a>
+      </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="mt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div *ngFor="let feature of features" class="card p-6 text-center hover:shadow-lg transition-shadow duration-300">
+        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <app-icon class="text-primary-600 dark:text-primary-400">
+            <ng-container [ngSwitch]="feature.icon">
+              <g *ngSwitchCase="'chart-bar'">
+                <path d="M3 3v18h18"/>
+                <path d="M7 12v5"/>
+                <path d="M11 8v9"/>
+                <path d="M15 6v11"/>
+                <path d="M19 4v13"/>
+              </g>
+              <g *ngSwitchCase="'wallet'">
+                <path d="M19 7V6a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1v2a1 1 0 0 0 1 1h1a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1z"/>
+                <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H5a2 2 0 0 1 0-4h15"/>
+              </g>
+              <g *ngSwitchCase="'target'">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="2"/>
+              </g>
+              <g *ngSwitchCase="'shield-check'">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </g>
+            </ng-container>
+          </app-icon>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {{ feature.title }}
+        </h3>
+        <p class="text-gray-600 dark:text-gray-300">
+          {{ feature.description }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="mt-24 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          Resultados que falam por si
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300">
+          Milhares de usuários já transformaram suas finanças conosco
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-primary-600 mb-2">98%</div>
+          <div class="text-gray-600 dark:text-gray-300">Satisfação dos usuários</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-primary-600 mb-2">R$ 2.5M</div>
+          <div class="text-gray-600 dark:text-gray-300">Economizados pelos usuários</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-primary-600 mb-2">10k+</div>
+          <div class="text-gray-600 dark:text-gray-300">Usuários ativos</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+          <app-icon class="text-primary-400 mr-3" size="24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </app-icon>
+          <span class="text-xl font-bold">Finance Manager</span>
+        </div>
+        <div class="text-gray-400">
+          © 2025 Finance Manager. Todos os direitos reservados.
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

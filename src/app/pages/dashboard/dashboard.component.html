@@ -1,0 +1,140 @@
+
+<div class="space-y-6">
+  <!-- Loading State -->
+  <app-loading *ngIf="isLoading"></app-loading>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Total Balance -->
+      <div class="card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Saldo Total</p>
+            <p class="text-2xl font-bold" [class]="getBalanceColor(stats.balance)">
+              {{ formatCurrency(stats.balance) }}
+            </p>
+          </div>
+          <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
+            <app-lucide-icon name="dollar-sign" class="text-white" [size]="24"></app-lucide-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Income -->
+      <div class="card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Receitas do Mês</p>
+            <p class="text-2xl font-bold text-green-600 dark:text-green-400">
+              {{ formatCurrency(stats.monthlyIncome) }}
+            </p>
+          </div>
+          <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+            <app-lucide-icon name="trending-up" class="text-white" [size]="24"></app-lucide-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Expenses -->
+      <div class="card p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Despesas do Mês</p>
+            <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+              {{ formatCurrency(stats.monthlyExpenses) }}
+            </p>
+          </div>
+          <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+            <app-lucide-icon name="trending-down" class="text-white" [size]="24"></app-lucide-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Monthly Overview Chart -->
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+          <app-lucide-icon name="bar-chart" [size]="20" class="mr-2"></app-lucide-icon>
+          Receitas vs Despesas ({{getYear()}})
+        </h3>
+        <div class="h-80">
+          <app-chart 
+            type="bar"
+            [data]="monthlyData"
+            [labels]="monthlyLabels"
+            [height]="300">
+          </app-chart>
+        </div>
+      </div>
+
+      <!-- Balance Trend Chart -->
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+          <app-lucide-icon name="line-chart" [size]="20" class="mr-2"></app-lucide-icon>
+          Evolução do Saldo (Últimos 6 meses)
+        </h3>
+        <div class="h-80">
+          <app-chart 
+            type="line"
+            [data]="balanceData"
+            [labels]="balanceLabels"
+            [height]="300">
+          </app-chart>
+        </div>
+      </div>
+
+      <!-- Category Distribution Chart -->
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+          <app-lucide-icon name="pie-chart" [size]="20" class="mr-2"></app-lucide-icon>
+          Despesas por Categoria
+        </h3>
+        <div class="h-80">
+          <app-chart 
+            type="doughnut"
+            [data]="categoryData"
+            [labels]="categoryLabels"
+            [height]="300">
+          </app-chart>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Resumo Financeiro
+        </h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-gray-600 dark:text-gray-400">Total de Receitas</span>
+            <span class="font-semibold text-green-600 dark:text-green-400">
+              {{ formatCurrency(stats.totalIncome) }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-gray-600 dark:text-gray-400">Total de Despesas</span>
+            <span class="font-semibold text-red-600 dark:text-red-400">
+              {{ formatCurrency(stats.totalExpense) }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <span class="text-gray-600 dark:text-gray-400">Saldo Mensal</span>
+            <span class="font-semibold" [class]="getBalanceColor(stats.monthlyBalance)">
+              {{ formatCurrency(stats.monthlyBalance) }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center py-2">
+            <span class="text-gray-600 dark:text-gray-400">Saldo Geral</span>
+            <span class="font-bold text-lg" [class]="getBalanceColor(stats.balance)">
+              {{ formatCurrency(stats.balance) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

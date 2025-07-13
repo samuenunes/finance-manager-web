@@ -1,0 +1,153 @@
+
+<div class="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <div class="flex justify-center mb-6">
+        <app-icon class="text-primary-600" size="48">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </app-icon>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+        Criar nova conta
+      </h2>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">
+        Ou 
+        <a routerLink="/login" class="text-primary-600 hover:text-primary-500 font-medium">
+          entrar na sua conta existente
+        </a>
+      </p>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="success" class="card p-8 text-center">
+      <div class="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+        <app-icon class="text-green-600 dark:text-green-400" size="32">
+          <path d="M20 6L9 17l-5-5"/>
+        </app-icon>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Conta criada com sucesso!
+      </h3>
+      <p class="text-gray-600 dark:text-gray-300">
+        Redirecionando para o login...
+      </p>
+    </div>
+
+    <!-- Form -->
+    <div *ngIf="!success" class="card p-8">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Error Message -->
+        <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+          {{ error }}
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Nome completo
+          </label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="input-field"
+            [class.border-red-500]="getFieldError('name')"
+            placeholder="Seu nome completo"
+          />
+          <p *ngIf="getFieldError('name')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('name') }}
+          </p>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="input-field"
+            [class.border-red-500]="getFieldError('email')"
+            placeholder="seu@email.com"
+          />
+          <p *ngIf="getFieldError('email')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('email') }}
+          </p>
+        </div>
+
+        <div>
+          <label for="cpf" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            CPF
+          </label>
+          <input
+            id="cpf"
+            type="cpf"
+            formControlName="cpf"
+            class="input-field"
+            [class.border-red-500]="getFieldError('cpf')"
+            placeholder="xxx.xxx.xxx-xx"
+          />
+          <p *ngIf="getFieldError('cpf')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('cpf') }}
+          </p>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Senha
+          </label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="input-field"
+            [class.border-red-500]="getFieldError('password')"
+            placeholder="••••••••"
+          />
+          <p *ngIf="getFieldError('password')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('password') }}
+          </p>
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Confirmar senha
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            class="input-field"
+            [class.border-red-500]="getFieldError('confirmPassword')"
+            placeholder="••••••••"
+          />
+          <p *ngIf="getFieldError('confirmPassword')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('confirmPassword') }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="!registerForm.valid || isLoading"
+          class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <span *ngIf="isLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+          {{ isLoading ? 'Criando conta...' : 'Criar conta' }}
+        </button>
+      </form>
+
+      <!-- Back to Landing -->
+      <div class="mt-6 text-center">
+        <a routerLink="/" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 text-sm">
+          ← Voltar para página inicial
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

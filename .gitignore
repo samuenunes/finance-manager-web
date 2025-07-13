@@ -1,0 +1,44 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+.angular/
+
+# IDEs and editors
+.vscode/
+*.code-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*.local
+
+# Compiled files
+*.tsbuildinfo
+
+# Angular cache
+.angular/cache/
+
+# Tailwind JIT cache
+.tailwind*
+
+# Coverage reports
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# Output of postcss
+postcss.config.js
+
+# NPM / Yarn lock files 
+package-lock.json
+# yarn.lock

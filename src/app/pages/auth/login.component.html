@@ -1,0 +1,85 @@
+
+<div class="min-h-screen bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <!-- Header -->
+    <div class="text-center">
+      <div class="flex justify-center mb-6">
+        <app-icon class="text-primary-600" size="48">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </app-icon>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+        Entrar na sua conta
+      </h2>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">
+        Ou 
+        <a routerLink="/register" class="text-primary-600 hover:text-primary-500 font-medium">
+          criar uma nova conta
+        </a>
+      </p>
+    </div>
+
+    <!-- Form -->
+    <div class="card p-8">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Error Message -->
+        <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+          {{ error }}
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="input-field"
+            [class.border-red-500]="getFieldError('email')"
+            placeholder="seu@email.com"
+          />
+          <p *ngIf="getFieldError('email')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('email') }}
+          </p>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Senha
+          </label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="input-field"
+            [class.border-red-500]="getFieldError('password')"
+            placeholder="••••••••"
+          />
+          <p *ngIf="getFieldError('password')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getFieldError('password') }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="!loginForm.valid || isLoading"
+          class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <span *ngIf="isLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+          {{ isLoading ? 'Entrando...' : 'Entrar' }}
+        </button>
+      </form>
+
+      <!-- Back to Landing -->
+      <div class="mt-6 text-center">
+        <a routerLink="/" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 text-sm">
+          ← Voltar para página inicial
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

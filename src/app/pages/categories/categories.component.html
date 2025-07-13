@@ -1,0 +1,270 @@
+
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Categorias</h1>
+    <button 
+      type="button"
+      class="btn-primary flex items-center"
+      (click)="openModal()">
+      <app-icon size="20" class="mr-2">
+        <path d="M12 5v14M5 12h14"/>
+      </app-icon>
+      Nova Categoria
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="border-b border-gray-200 dark:border-gray-700">
+    <nav class="-mb-px flex space-x-8">
+      <button
+        type="button"
+        class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+        [class]="activeTab === 'expenses' 
+          ? 'border-primary-500 text-primary-600 dark:text-primary-400' 
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
+        (click)="setActiveTab('expenses')">
+        <app-icon size="16" class="mr-2 inline">
+          <path d="M3 7l6 6 4-4 8 8M21 17V11h-6"/>
+        </app-icon>
+        Categorias de Despesas
+      </button>
+      <button
+        type="button"
+        class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+        [class]="activeTab === 'incomes' 
+          ? 'border-primary-500 text-primary-600 dark:text-primary-400' 
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'"
+        (click)="setActiveTab('incomes')">
+        <app-icon size="16" class="mr-2 inline">
+          <path d="m3 17 6-6 4 4 8-8M21 7v6h-6"/>
+        </app-icon>
+        Categorias de Receitas
+      </button>
+    </nav>
+  </div>
+
+  <!-- Loading State -->
+  <app-loading *ngIf="isLoading"></app-loading>
+
+  <!-- Expense Categories -->
+  <div *ngIf="!isLoading && activeTab === 'expenses'" class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Nome
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Tipo
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Ações
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr *ngFor="let category of expenseCategories" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ category.name }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex space-x-2">
+                <span *ngIf="category.essential" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200">
+                  Essencial
+                </span>
+                <span *ngIf="category.fixed" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200">
+                  Fixa
+                </span>
+                <span *ngIf="!category.essential && !category.fixed" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                  Variável
+                </span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <button 
+                  type="button"
+                  class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300"
+                  (click)="openModal(category)">
+                  <app-icon size="16">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="m18.5 2.5-8 8v4h4l8-8"/>
+                  </app-icon>
+                </button>
+                <button 
+                  type="button"
+                  class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                  (click)="confirmDelete(category.id)">
+                  <app-icon size="16">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </app-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="expenseCategories.length === 0">
+            <td colspan="3" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+              <app-icon size="48" class="mx-auto mb-4 text-gray-300 dark:text-gray-600">
+                <path d="M12 2l3.09 6.26L22 9l-5 4.74L18.18 21 12 17.77 5.82 21 7 13.74 2 9l6.91-.74L12 2z"/>
+              </app-icon>
+              <p>Nenhuma categoria de despesa encontrada</p>
+              <button 
+                type="button"
+                class="btn-primary mt-4"
+                (click)="openModal()">
+                Adicionar primeira categoria
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Income Categories -->
+  <div *ngIf="!isLoading && activeTab === 'incomes'" class="card">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Nome
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Tipo
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Ações
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr *ngFor="let category of incomeCategories" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ category.name }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    [class]="category.fixed 
+                      ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200' 
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'">
+                {{ category.fixed ? 'Fixa' : 'Variável' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2">
+                <button 
+                  type="button"
+                  class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300"
+                  (click)="openModal(category)">
+                  <app-icon size="16">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="m18.5 2.5-8 8v4h4l8-8"/>
+                  </app-icon>
+                </button>
+                <button 
+                  type="button"
+                  class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                  (click)="confirmDelete(category.id)">
+                  <app-icon size="16">
+                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </app-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="incomeCategories.length === 0">
+            <td colspan="3" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+              <app-icon size="48" class="mx-auto mb-4 text-gray-300 dark:text-gray-600">
+                <path d="M12 2l3.09 6.26L22 9l-5 4.74L18.18 21 12 17.77 5.82 21 7 13.74 2 9l6.91-.74L12 2z"/>
+              </app-icon>
+              <p>Nenhuma categoria de receita encontrada</p>
+              <button 
+                type="button"
+                class="btn-primary mt-4"
+                (click)="openModal()">
+                Adicionar primeira categoria
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <app-modal 
+    [isOpen]="showModal"
+    [title]="editingCategory ? 'Editar Categoria' : 'Nova Categoria'"
+    confirmText="Salvar"
+    cancelText="Cancelar"
+    (confirm)="onSubmit()"
+    (cancel)="closeModal()">
+    
+    <form [formGroup]="categoryForm" class="space-y-4">
+      <!-- Name -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Nome da Categoria
+        </label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="input-field"
+          [class.border-red-500]="getFieldError('name')"
+          placeholder="Ex: Alimentação, Transporte, Salário..."
+        />
+        <p *ngIf="getFieldError('name')" class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getFieldError('name') }}
+        </p>
+      </div>
+
+      <!-- Fixed -->
+      <div class="flex items-center">
+        <input
+          id="fixed"
+          type="checkbox"
+          formControlName="fixed"
+          class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+        />
+        <label for="fixed" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+          Categoria fixa (valor recorrente)
+        </label>
+      </div>
+
+      <!-- Essential (only for expense categories) -->
+      <div *ngIf="activeTab === 'expenses'" class="flex items-center">
+        <input
+          id="essential"
+          type="checkbox"
+          formControlName="essential"
+          class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+        />
+        <label for="essential" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+          Categoria essencial (gastos necessários)
+        </label>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Delete Confirmation Modal -->
+  <app-modal 
+    [isOpen]="showDeleteModal"
+    title="Confirmar Exclusão"
+    confirmText="Excluir"
+    cancelText="Cancelar"
+    (confirm)="deleteCategory()"
+    (cancel)="cancelDelete()">
+    
+    <p class="text-gray-600 dark:text-gray-300">
+      Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita e pode afetar registros existentes.
+    </p>
+  </app-modal>
+</div>

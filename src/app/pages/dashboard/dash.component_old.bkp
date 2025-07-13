@@ -1,0 +1,200 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
+import { ExpenseService } from '../../services/expense.service';
+import { IncomeService } from '../../services/income.service';
+import { ExpenseResponse, IncomeResponse } from '../../models';
+import { CurrencyUtils } from '../../utils/currency.utils';
+import { LucideIconComponent } from '../../shared/icons/lucide-icon.component';
+import { LoadingComponent } from '../../shared/components/loading.component';
+import { ChartComponent } from './chart.component';
+
+interface DashboardStats {
+  totalIncome: number;
+  totalExpenses: number;
+  balance: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  monthlyBalance: number;
+}
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, LucideIconComponent, LoadingComponent, ChartComponent],
+  templateUrl: './dashboard.component.html'
+})
+export class DashboardComponent implements OnInit {
+  isLoading = true;
+  stats: DashboardStats = {
+    totalIncome: 0,
+    totalExpenses: 0,
+    balance: 0,
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    monthlyBalance: 0
+  };
+
+  incomes: IncomeResponse[] = [];
+  expenses: ExpenseResponse[] = [];
+
+  // Chart data
+  monthlyData: any[] = [];
+  monthlyLabels: string[] = [];
+  balanceData: number[] = [];
+  balanceLabels: string[] = [];
+  categoryData: number[] = [];
+  categoryLabels: string[] = [];
+
+  constructor(
+    private expenseService: ExpenseService,
+    private incomeService: IncomeService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
+
+  private loadDashboardData(): void {
+    this.isLoading = true;
+
+    forkJoin({
+      incomes: this.incomeService.getAll(),
+      expenses: this.expenseService.getAll()
+    }).subscribe({
+      next: ({ incomes, expenses }) => {
+        this.incomes = incomes;
+        this.expenses = expenses;
+        this.calculateStats();
+        this.prepareChartData();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading dashboard data:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private calculateStats(): void {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    // Total calculations
+    this.stats.totalIncome = this.incomes.reduce((sum, income) => sum + income.amount, 0);
+    this.stats.totalExpenses = this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    this.stats.balance = this.stats.totalIncome - this.stats.totalExpenses;
+
+    // Monthly calculations
+    this.stats.monthlyIncome = this.incomes
+      .filter(income => {
+        const date = this.parseDate(income.date);
+        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      })
+      .reduce((sum, income) => sum + income.amount, 0);
+
+    this.stats.monthlyExpenses = this.expenses
+      .filter(expense => {
+        const date = this.parseDate(expense.date);
+        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      })
+      .reduce((sum, expense) => sum + expense.amount, 0);
+
+    this.stats.monthlyBalance = this.stats.monthlyIncome - this.stats.monthlyExpenses;
+  }
+
+  private parseDate(dateString: string): Date {
+    const [day, month, year] = dateString.split('/').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  formatCurrency(value: number): string {
+    return CurrencyUtils.formatBRL(value);
+  }
+
+  getBalanceColor(balance: number): string {
+    return balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+  }
+
+  private prepareChartData(): void {
+    this.prepareMonthlyData();
+    this.prepareBalanceData();
+    this.prepareCategoryData();
+  }
+
+  private prepareMonthlyData(): void {
+    const currentYear = new Date().getFullYear();
+    const months = [
+      'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+      'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+    ];
+
+    this.monthlyLabels = months;
+    this.monthlyData = months.map((_, index) => {
+      const monthIncomes = this.incomes
+        .filter(income => {
+          const date = this.parseDate(income.date);
+          return date.getMonth() === index && date.getFullYear() === currentYear;
+        })
+        .reduce((sum, income) => sum + income.amount, 0);
+
+      const monthExpenses = this.expenses
+        .filter(expense => {
+          const date = this.parseDate(expense.date);
+          return date.getMonth() === index && date.getFullYear() === currentYear;
+        })
+        .reduce((sum, expense) => sum + expense.amount, 0);
+
+      return {
+        income: monthIncomes,
+        expenses: monthExpenses
+      };
+    });
+  }
+
+  private prepareBalanceData(): void {
+    const currentDate = new Date();
+    const months = [];
+    const balances = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthName = date.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+      months.push(monthName);
+
+      const monthIncomes = this.incomes
+        .filter(income => {
+          const incomeDate = this.parseDate(income.date);
+          return incomeDate.getMonth() === date.getMonth() && 
+                 incomeDate.getFullYear() === date.getFullYear();
+        })
+        .reduce((sum, income) => sum + income.amount, 0);
+
+      const monthExpenses = this.expenses
+        .filter(expense => {
+          const expenseDate = this.parseDate(expense.date);
+          return expenseDate.getMonth() === date.getMonth() && 
+                 expenseDate.getFullYear() === date.getFullYear();
+        })
+        .reduce((sum, expense) => sum + expense.amount, 0);
+
+      balances.push(monthIncomes - monthExpenses);
+    }
+
+    this.balanceLabels = months;
+    this.balanceData = balances;
+  }
+
+  private prepareCategoryData(): void {
+    const categoryMap = new Map<string, number>();
+
+    this.expenses.forEach(expense => {
+      const categoryName = expense.category.name;
+      const currentAmount = categoryMap.get(categoryName) || 0;
+      categoryMap.set(categoryName, currentAmount + expense.amount);
+    });
+
+    this.categoryLabels = Array.from(categoryMap.keys());
+    this.categoryData = Array.from(categoryMap.values());
+  }
+}
